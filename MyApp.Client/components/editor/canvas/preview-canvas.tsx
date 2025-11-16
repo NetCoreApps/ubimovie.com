@@ -143,7 +143,7 @@ export function PreviewCanvas({ project }: PreviewCanvasProps) {
                 <div className="text-white">Loading...</div>
               </div>
             )}
-            errorFallback={(error) => (
+            errorFallback={({ error }) => (
               <div className="flex items-center justify-center h-full bg-red-900/20">
                 <div className="text-red-400">Error: {error.message}</div>
               </div>
