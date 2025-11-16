@@ -9,17 +9,17 @@ A browser-based video editing platform built with Next.js 14+, React, TailwindCS
 ## **1. Technical Stack**
 
 ### **Core Technologies**
-- **Framework**: Next.js 14+ (App Router)
-- **UI Library**: React 18+
+- **Framework**: Next.js 16+ (App Router)
+- **UI Library**: React 19+
 - **Styling**: TailwindCSS + shadcn/ui components
 - **State Management**: Zustand (with middleware for persistence)
 - **Video Engine**: Remotion 4.x
 - **Storage**:
   - Primary: IndexedDB (via Dexie.js)
-  - Optional: Supabase (PostgreSQL + Storage)
+  - Optional: PostgreSQL
 - **File Handling**: Browser File System Access API (with fallbacks)
-- **Rendering**: Remotion Lambda (cloud) or local rendering
-- **Deployment**: Vercel
+- **Rendering**: Remotion local rendering
+- **Deployment**: Kamal + Docker
 
 ### **Supporting Libraries**
 - **Drag & Drop**: @dnd-kit/core, @dnd-kit/sortable
@@ -42,36 +42,36 @@ A browser-based video editing platform built with Next.js 14+, React, TailwindCS
 │                 Next.js App Router                  │
 ├─────────────────────────────────────────────────────┤
 │                                                     │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────┐ │
-│  │   Dashboard  │  │    Editor    │  │  Render  │ │
-│  │     Page     │  │     Page     │  │   Page   │ │
-│  └──────────────┘  └──────────────┘  └──────────┘ │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────┐   │
+│  │   Dashboard  │  │    Editor    │  │  Render  │   │
+│  │     Page     │  │     Page     │  │   Page   │   │
+│  └──────────────┘  └──────────────┘  └──────────┘   │
 │                                                     │
 ├─────────────────────────────────────────────────────┤
 │              Zustand State Management               │
-│  ┌─────────────┐ ┌──────────────┐ ┌──────────────┐│
-│  │  Project    │ │   Timeline   │ │   Playback   ││
-│  │   Store     │ │    Store     │ │    Store     ││
-│  └─────────────┘ └──────────────┘ └──────────────┘│
+│  ┌─────────────┐ ┌──────────────┐ ┌──────────────┐  │
+│  │  Project    │ │   Timeline   │ │   Playback   │  │
+│  │   Store     │ │    Store     │ │    Store     │  │
+│  └─────────────┘ └──────────────┘ └──────────────┘  │
 ├─────────────────────────────────────────────────────┤
 │                  Service Layer                      │
-│  ┌─────────────┐ ┌──────────────┐ ┌──────────────┐│
-│  │   Storage   │ │    Asset     │ │   Remotion   ││
-│  │   Service   │ │   Manager    │ │   Renderer   ││
-│  └─────────────┘ └──────────────┘ └──────────────┘│
+│  ┌─────────────┐ ┌──────────────┐ ┌──────────────┐  │
+│  │   Storage   │ │    Asset     │ │   Remotion   │  │
+│  │   Service   │ │   Manager    │ │   Renderer   │  │
+│  └─────────────┘ └──────────────┘ └──────────────┘  │
 ├─────────────────────────────────────────────────────┤
 │              Data Persistence Layer                 │
-│  ┌─────────────┐ ┌──────────────┐ ┌──────────────┐│
-│  │  IndexedDB  │ │   Supabase   │ │ File System  ││
-│  │  (Dexie)    │ │  (Optional)  │ │     API      ││
-│  └─────────────┘ └──────────────┘ └──────────────┘│
+│  ┌─────────────┐ ┌──────────────┐ ┌──────────────┐  │
+│  │  IndexedDB  │ │   Supabase   │ │ File System  │  │
+│  │  (Dexie)    │ │  (Optional)  │ │     API      │  │
+│  └─────────────┘ └──────────────┘ └──────────────┘  │
 └─────────────────────────────────────────────────────┘
 ```
 
 ### **2.2 Folder Structure**
 
 ```
-movie-creator/
+MyApp.Client/
 ├── app/
 │   ├── (auth)/                    # Auth-related pages (future)
 │   ├── (marketing)/               # Landing, pricing pages
@@ -1497,11 +1497,11 @@ This technical specification provides a comprehensive blueprint for building a p
 
 **Recommended Implementation Order:**
 
-1. **Week 1-2:** Project setup, folder structure, basic routing, Zustand stores
-2. **Week 3-4:** Dashboard UI, project CRUD, IndexedDB integration
-3. **Week 5-8:** Timeline UI (single track), drag & drop, basic element rendering
-4. **Week 9-10:** Remotion integration, preview canvas, playback controls
-5. **Week 11-12:** Browser-based rendering, export functionality
-6. **Week 13+:** Testing, bug fixes, polish, deploy MVP
+1. Project setup, folder structure, basic routing, Zustand stores
+2. Dashboard UI, project CRUD, IndexedDB integration
+3. Timeline UI (single track), drag & drop, basic element rendering
+4. Remotion integration, preview canvas, playback controls
+5. Browser-based rendering, export functionality
+6. Testing, bug fixes, polish, deploy MVP
 
 This specification can evolve as you build—prioritize MVP features first, then iterate based on user feedback.
