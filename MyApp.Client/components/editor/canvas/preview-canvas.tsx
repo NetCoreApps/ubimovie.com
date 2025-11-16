@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Player, PlayerRef } from '@remotion/player';
 import { Project } from '@/lib/types/project';
 import { useAssetStore } from '@/lib/stores/asset-store';
@@ -19,17 +19,37 @@ export function PreviewCanvas({ project }: PreviewCanvasProps) {
   const { isPlaying, pause } = usePlaybackStore();
   const { getTimeline, setCurrentFrame } = useTimelineStore();
   const timeline = getTimeline();
+  const [isPlayerReady, setIsPlayerReady] = useState(false);
+
+  // Wait for player to be ready
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (playerRef.current) {
+        setIsPlayerReady(true);
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Sync player playback state
   useEffect(() => {
-    if (!playerRef.current) return;
-
-    if (isPlaying) {
-      playerRef.current.play();
-    } else {
-      playerRef.current.pause();
+    if (!playerRef.current || !isPlayerReady) {
+      console.log('Player not ready yet');
+      return;
     }
-  }, [isPlaying]);
+
+    try {
+      if (isPlaying) {
+        console.log('Starting playback');
+        playerRef.current.play();
+      } else {
+        console.log('Pausing playback');
+        playerRef.current.pause();
+      }
+    } catch (error) {
+      console.error('Error controlling playback:', error);
+    }
+  }, [isPlaying, isPlayerReady]);
 
   // Handle frame updates from player
   const handleFrameUpdate = useCallback(
@@ -49,7 +69,7 @@ export function PreviewCanvas({ project }: PreviewCanvasProps) {
   if (!timeline) return null;
 
   return (
-    <div className="h-full flex flex-col bg-slate-200 dark:bg-slate-900">
+    <div className="h-full flex flex-col bg-slate-900">
       <div className="flex-1 flex items-center justify-center p-4">
         <div
           className="relative bg-black shadow-2xl rounded-lg overflow-hidden"
@@ -79,6 +99,8 @@ export function PreviewCanvas({ project }: PreviewCanvasProps) {
             clickToPlay={false}
             doubleClickToFullscreen={false}
             spaceKeyToPlayOrPause={false}
+            autoPlay={false}
+            loop={false}
           />
         </div>
       </div>

@@ -35,14 +35,14 @@ export function PlaybackControls({ project, playerRef }: PlaybackControlsProps) 
   };
 
   return (
-    <div className="h-16 bg-white dark:bg-slate-900 border-t border-border px-4 flex items-center gap-4 shadow-sm">
+    <div className="h-16 bg-slate-900 border-t border-slate-800 px-4 flex items-center gap-4 shadow-lg">
       <div className="flex items-center gap-2">
         <Button
           size="sm"
           variant="ghost"
           onClick={() => skipBackward(30)}
           title="Go back 1 second"
-          className="h-10 w-10"
+          className="h-10 w-10 text-white hover:bg-slate-800"
         >
           <SkipBack className="w-5 h-5" />
         </Button>
@@ -51,7 +51,7 @@ export function PlaybackControls({ project, playerRef }: PlaybackControlsProps) 
           size="sm"
           variant="default"
           onClick={togglePlay}
-          className="w-12 h-12 rounded-full"
+          className="w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700"
         >
           {isPlaying ? (
             <Pause className="w-5 h-5" />
@@ -65,20 +65,20 @@ export function PlaybackControls({ project, playerRef }: PlaybackControlsProps) 
           variant="ghost"
           onClick={() => skipForward(30)}
           title="Go forward 1 second"
-          className="h-10 w-10"
+          className="h-10 w-10 text-white hover:bg-slate-800"
         >
           <SkipForward className="w-5 h-5" />
         </Button>
       </div>
 
       <div className="flex items-center gap-3 text-sm font-mono font-semibold">
-        <span className="text-foreground">{formatTime(currentFrame)}</span>
-        <span className="text-muted-foreground">/</span>
-        <span className="text-muted-foreground">{formatTime(totalFrames)}</span>
+        <span className="text-white">{formatTime(currentFrame)}</span>
+        <span className="text-slate-500">/</span>
+        <span className="text-slate-400">{formatTime(totalFrames)}</span>
       </div>
 
-      <div className="ml-auto text-sm text-muted-foreground font-medium">
-        Frame: <span className="text-foreground font-semibold">{currentFrame}</span> / {totalFrames}
+      <div className="ml-auto text-sm text-slate-400 font-medium">
+        Frame: <span className="text-white font-semibold">{currentFrame}</span> / {totalFrames}
       </div>
     </div>
   );
