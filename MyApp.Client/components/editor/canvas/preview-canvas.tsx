@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Player, PlayerRef } from '@remotion/player';
 import { Project } from '@/lib/types/project';
 import { useAssetStore } from '@/lib/stores/asset-store';
@@ -19,37 +19,94 @@ export function PreviewCanvas({ project }: PreviewCanvasProps) {
   const { isPlaying, pause } = usePlaybackStore();
   const { getTimeline, setCurrentFrame } = useTimelineStore();
   const timeline = getTimeline();
+  const [isPlayerReady, setIsPlayerReady] = useState(false);
+
+  // Wait for player to be ready with better detection
+  useEffect(() => {
+    let attempts = 0;
+    const maxAttempts = 20;
+    let timeoutId: NodeJS.Timeout;
+
+    const checkPlayerReady = () => {
+      if (playerRef.current) {
+        try {
+          // Try to get current frame as a test of readiness
+          playerRef.current.getCurrentFrame();
+          console.log('Player is ready!');
+          setIsPlayerReady(true);
+          return;
+        } catch (error) {
+          console.log('Player not ready yet, attempt:', attempts + 1);
+        }
+      }
+
+      attempts++;
+      if (attempts < maxAttempts) {
+        timeoutId = setTimeout(checkPlayerReady, 100);
+      } else {
+        console.error('Player failed to initialize after', maxAttempts, 'attempts');
+      }
+    };
+
+    timeoutId = setTimeout(checkPlayerReady, 100);
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  // Sync current frame to player when timeline changes
+  useEffect(() => {
+    if (!playerRef.current || !isPlayerReady) {
+      return;
+    }
+
+    try {
+      const currentPlayerFrame = playerRef.current.getCurrentFrame();
+      if (timeline && currentPlayerFrame !== timeline.currentFrame) {
+        playerRef.current.seekTo(timeline.currentFrame);
+      }
+    } catch (error) {
+      console.error('Error seeking player:', error);
+    }
+  }, [timeline?.currentFrame, isPlayerReady]);
 
   // Sync player playback state
   useEffect(() => {
-    if (!playerRef.current) return;
-
-    if (isPlaying) {
-      playerRef.current.play();
-    } else {
-      playerRef.current.pause();
+    if (!playerRef.current || !isPlayerReady) {
+      console.log('Player not ready for playback control');
+      return;
     }
-  }, [isPlaying]);
 
-  // Handle frame updates from player
-  const handleFrameUpdate = useCallback(
-    (frame: number) => {
-      if (timeline && frame !== timeline.currentFrame) {
-        setCurrentFrame(frame);
+    try {
+      const player = playerRef.current;
+      console.log('Current player state:', {
+        isPlaying,
+        currentFrame: player.getCurrentFrame(),
+        isPlayerPlaying: player.isPlaying(),
+      });
+
+      if (isPlaying) {
+        console.log('Calling play() on player');
+        player.play();
+
+        // Verify playback started
+        setTimeout(() => {
+          console.log('Playback verification:', {
+            isPlayerPlaying: player.isPlaying(),
+            currentFrame: player.getCurrentFrame(),
+          });
+        }, 100);
+      } else {
+        console.log('Calling pause() on player');
+        player.pause();
       }
-    },
-    [timeline, setCurrentFrame]
-  );
-
-  // Handle playback end
-  const handleEnded = useCallback(() => {
-    pause();
-  }, [pause]);
+    } catch (error) {
+      console.error('Error controlling playback:', error);
+    }
+  }, [isPlaying, isPlayerReady]);
 
   if (!timeline) return null;
 
   return (
-    <div className="h-full flex flex-col bg-slate-200 dark:bg-slate-900">
+    <div className="h-full flex flex-col bg-slate-900">
       <div className="flex-1 flex items-center justify-center p-4">
         <div
           className="relative bg-black shadow-2xl rounded-lg overflow-hidden"
@@ -79,6 +136,18 @@ export function PreviewCanvas({ project }: PreviewCanvasProps) {
             clickToPlay={false}
             doubleClickToFullscreen={false}
             spaceKeyToPlayOrPause={false}
+            autoPlay={false}
+            loop={false}
+            renderLoading={() => (
+              <div className="flex items-center justify-center h-full bg-black">
+                <div className="text-white">Loading...</div>
+              </div>
+            )}
+            errorFallback={({ error }) => (
+              <div className="flex items-center justify-center h-full bg-red-900/20">
+                <div className="text-red-400">Error: {error.message}</div>
+              </div>
+            )}
           />
         </div>
       </div>

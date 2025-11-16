@@ -34,8 +34,8 @@ export function TimelineRuler({ fps, totalFrames }: TimelineRulerProps) {
         className="absolute top-0 bottom-0 flex flex-col"
         style={{ left: `${frame * pixelsPerFrame}px` }}
       >
-        <div className="w-px h-3 bg-gray-600" />
-        <span className="text-xs text-gray-500 ml-1">{seconds}s</span>
+        <div className="w-px h-3 bg-slate-600" />
+        <span className="text-xs text-slate-500 ml-1">{seconds}s</span>
       </div>
     );
   }
@@ -44,7 +44,7 @@ export function TimelineRuler({ fps, totalFrames }: TimelineRulerProps) {
 
   return (
     <div
-      className="h-8 bg-white dark:bg-slate-900 border-b border-border relative cursor-pointer overflow-x-auto shadow-sm"
+      className="h-8 bg-slate-900 border-b border-slate-800 relative cursor-pointer overflow-x-auto shadow-sm"
       onClick={handleClick}
       style={{ width: '100%' }}
     >

@@ -50,18 +50,18 @@ export function TimelineContainer({ project }: TimelineContainerProps) {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-slate-950">
       {/* Toolbar */}
-      <div className="h-12 bg-slate-50 dark:bg-slate-900 border-b border-border px-4 flex items-center gap-2 shadow-sm">
-        <Button size="sm" variant="ghost" onClick={() => addTrack('video')} className="font-medium">
+      <div className="h-12 bg-slate-900 border-b border-slate-800 px-4 flex items-center gap-2 shadow-sm">
+        <Button size="sm" variant="ghost" onClick={() => addTrack('video')} className="font-medium text-white hover:bg-slate-800">
           <Video className="w-4 h-4 mr-1" />
           Add Video Track
         </Button>
-        <Button size="sm" variant="ghost" onClick={() => addTrack('audio')} className="font-medium">
+        <Button size="sm" variant="ghost" onClick={() => addTrack('audio')} className="font-medium text-white hover:bg-slate-800">
           <Music className="w-4 h-4 mr-1" />
           Add Audio Track
         </Button>
-        <Button size="sm" variant="ghost" onClick={() => addTrack('text')} className="font-medium">
+        <Button size="sm" variant="ghost" onClick={() => addTrack('text')} className="font-medium text-white hover:bg-slate-800">
           <Type className="w-4 h-4 mr-1" />
           Add Text Track
         </Button>
@@ -71,9 +71,9 @@ export function TimelineContainer({ project }: TimelineContainerProps) {
       <TimelineRuler fps={project.settings.fps} totalFrames={project.settings.durationInFrames} />
 
       {/* Tracks */}
-      <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
+      <div className="flex-1 overflow-y-auto bg-slate-950">
         {timeline.tracks.length === 0 ? (
-          <div className="h-full flex items-center justify-center text-muted-foreground">
+          <div className="h-full flex items-center justify-center text-slate-500">
             <div className="text-center">
               <Plus className="w-12 h-12 mx-auto mb-2 opacity-50" />
               <p className="text-sm font-medium">No tracks yet</p>

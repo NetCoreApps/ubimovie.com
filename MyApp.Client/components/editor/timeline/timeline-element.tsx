@@ -27,15 +27,15 @@ export function TimelineElement({ element, fps }: TimelineElementProps) {
   const getElementColor = () => {
     switch (element.type) {
       case 'video':
-        return 'bg-blue-600 dark:bg-blue-700 border-blue-500 dark:border-blue-600';
+        return 'bg-blue-700 border-blue-600';
       case 'audio':
-        return 'bg-green-600 dark:bg-green-700 border-green-500 dark:border-green-600';
+        return 'bg-green-700 border-green-600';
       case 'image':
-        return 'bg-purple-600 dark:bg-purple-700 border-purple-500 dark:border-purple-600';
+        return 'bg-purple-700 border-purple-600';
       case 'text':
-        return 'bg-yellow-600 dark:bg-yellow-700 border-yellow-500 dark:border-yellow-600';
+        return 'bg-yellow-700 border-yellow-600';
       default:
-        return 'bg-gray-600 dark:bg-gray-700 border-gray-500 dark:border-gray-600';
+        return 'bg-gray-700 border-gray-600';
     }
   };
 
