@@ -1,14 +1,17 @@
-import { createServer } from 'https'
+import { createServer as createHttpServer } from 'http'
+import { createServer as createHttpsServer } from 'https'
 import { parse } from 'url'
 import next from 'next'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 import fs from 'fs'
 import path from 'path'
-import child_process from 'child_process'
 
 const dev = process.env.NODE_ENV !== 'production'
 const hostname = 'localhost'
 const port = 3000
+
+// Use HTTP for development unless certificates are explicitly provided
+const useHttps = !dev && process.env.USE_HTTPS === 'true'
 
 const baseFolder =
     process.env.APPDATA !== undefined && process.env.APPDATA !== ''
@@ -18,36 +21,6 @@ const baseFolder =
 const certificateName = "myapp.client";
 const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
 const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
-
-// Generate dev certificates if they don't exist (for dev mode only)
-if (dev) {
-    console.log(`Certificate path: ${certFilePath}`);
-
-    if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
-        // mkdir to fix dotnet dev-certs error 3 https://github.com/dotnet/aspnetcore/issues/58330
-        if (!fs.existsSync(baseFolder)) {
-            fs.mkdirSync(baseFolder, { recursive: true });
-        }
-        if (
-            0 !==
-            child_process.spawnSync(
-                "dotnet",
-                [
-                    "dev-certs",
-                    "https",
-                    "--export-path",
-                    certFilePath,
-                    "--format",
-                    "Pem",
-                    "--no-password",
-                ],
-                { stdio: "inherit" }
-            ).status
-        ) {
-            throw new Error("Could not create certificate.");
-        }
-    }
-}
 
 const target = process.env.ASPNETCORE_HTTPS_PORT
     ? `https://localhost:${process.env.ASPNETCORE_HTTPS_PORT}`
@@ -77,12 +50,7 @@ const apiProxy = createProxyMiddleware({
 })
 
 app.prepare().then(() => {
-    const serverOptions = dev ? {
-        key: fs.readFileSync(keyFilePath),
-        cert: fs.readFileSync(certFilePath),
-    } : {};
-
-    createServer(serverOptions, async (req, res) => {
+    const requestHandler = async (req, res) => {
         try {
             const parsedUrl = parse(req.url, true)
             const { pathname } = parsedUrl
@@ -99,13 +67,30 @@ app.prepare().then(() => {
             res.statusCode = 500
             res.end('internal server error')
         }
-    })
+    }
+
+    // Create HTTP or HTTPS server based on environment
+    let server
+    if (useHttps && fs.existsSync(certFilePath) && fs.existsSync(keyFilePath)) {
+        const serverOptions = {
+            key: fs.readFileSync(keyFilePath),
+            cert: fs.readFileSync(certFilePath),
+        }
+        server = createHttpsServer(serverOptions, requestHandler)
+        console.log('Starting HTTPS server...')
+    } else {
+        server = createHttpServer(requestHandler)
+        console.log('Starting HTTP server...')
+    }
+
+    server
     .once('error', (err) => {
         console.error(err)
         process.exit(1)
     })
     .listen(port, () => {
-        console.log(`> Ready on https://${hostname}:${port}`)
+        const protocol = useHttps && fs.existsSync(certFilePath) ? 'https' : 'http'
+        console.log(`> Ready on ${protocol}://${hostname}:${port}`)
         console.log(`> Proxying /api requests to ${target}`)
     })
 })

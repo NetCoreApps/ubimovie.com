@@ -21,50 +21,87 @@ export function PreviewCanvas({ project }: PreviewCanvasProps) {
   const timeline = getTimeline();
   const [isPlayerReady, setIsPlayerReady] = useState(false);
 
-  // Wait for player to be ready
+  // Wait for player to be ready with better detection
   useEffect(() => {
-    const timer = setTimeout(() => {
+    let attempts = 0;
+    const maxAttempts = 20;
+    let timeoutId: NodeJS.Timeout;
+
+    const checkPlayerReady = () => {
       if (playerRef.current) {
-        setIsPlayerReady(true);
+        try {
+          // Try to get current frame as a test of readiness
+          playerRef.current.getCurrentFrame();
+          console.log('Player is ready!');
+          setIsPlayerReady(true);
+          return;
+        } catch (error) {
+          console.log('Player not ready yet, attempt:', attempts + 1);
+        }
       }
-    }, 100);
-    return () => clearTimeout(timer);
+
+      attempts++;
+      if (attempts < maxAttempts) {
+        timeoutId = setTimeout(checkPlayerReady, 100);
+      } else {
+        console.error('Player failed to initialize after', maxAttempts, 'attempts');
+      }
+    };
+
+    timeoutId = setTimeout(checkPlayerReady, 100);
+    return () => clearTimeout(timeoutId);
   }, []);
 
-  // Sync player playback state
+  // Sync current frame to player when timeline changes
   useEffect(() => {
     if (!playerRef.current || !isPlayerReady) {
-      console.log('Player not ready yet');
       return;
     }
 
     try {
+      const currentPlayerFrame = playerRef.current.getCurrentFrame();
+      if (timeline && currentPlayerFrame !== timeline.currentFrame) {
+        playerRef.current.seekTo(timeline.currentFrame);
+      }
+    } catch (error) {
+      console.error('Error seeking player:', error);
+    }
+  }, [timeline?.currentFrame, isPlayerReady]);
+
+  // Sync player playback state
+  useEffect(() => {
+    if (!playerRef.current || !isPlayerReady) {
+      console.log('Player not ready for playback control');
+      return;
+    }
+
+    try {
+      const player = playerRef.current;
+      console.log('Current player state:', {
+        isPlaying,
+        currentFrame: player.getCurrentFrame(),
+        isPlayerPlaying: player.isPlaying(),
+      });
+
       if (isPlaying) {
-        console.log('Starting playback');
-        playerRef.current.play();
+        console.log('Calling play() on player');
+        player.play();
+
+        // Verify playback started
+        setTimeout(() => {
+          console.log('Playback verification:', {
+            isPlayerPlaying: player.isPlaying(),
+            currentFrame: player.getCurrentFrame(),
+          });
+        }, 100);
       } else {
-        console.log('Pausing playback');
-        playerRef.current.pause();
+        console.log('Calling pause() on player');
+        player.pause();
       }
     } catch (error) {
       console.error('Error controlling playback:', error);
     }
   }, [isPlaying, isPlayerReady]);
-
-  // Handle frame updates from player
-  const handleFrameUpdate = useCallback(
-    (frame: number) => {
-      if (timeline && frame !== timeline.currentFrame) {
-        setCurrentFrame(frame);
-      }
-    },
-    [timeline, setCurrentFrame]
-  );
-
-  // Handle playback end
-  const handleEnded = useCallback(() => {
-    pause();
-  }, [pause]);
 
   if (!timeline) return null;
 
@@ -101,6 +138,16 @@ export function PreviewCanvas({ project }: PreviewCanvasProps) {
             spaceKeyToPlayOrPause={false}
             autoPlay={false}
             loop={false}
+            renderLoading={() => (
+              <div className="flex items-center justify-center h-full bg-black">
+                <div className="text-white">Loading...</div>
+              </div>
+            )}
+            errorFallback={(error) => (
+              <div className="flex items-center justify-center h-full bg-red-900/20">
+                <div className="text-red-400">Error: {error.message}</div>
+              </div>
+            )}
           />
         </div>
       </div>
