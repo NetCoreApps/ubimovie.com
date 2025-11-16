@@ -27,15 +27,15 @@ export function TimelineElement({ element, fps }: TimelineElementProps) {
   const getElementColor = () => {
     switch (element.type) {
       case 'video':
-        return 'bg-blue-600 border-blue-500';
+        return 'bg-blue-600 dark:bg-blue-700 border-blue-500 dark:border-blue-600';
       case 'audio':
-        return 'bg-green-600 border-green-500';
+        return 'bg-green-600 dark:bg-green-700 border-green-500 dark:border-green-600';
       case 'image':
-        return 'bg-purple-600 border-purple-500';
+        return 'bg-purple-600 dark:bg-purple-700 border-purple-500 dark:border-purple-600';
       case 'text':
-        return 'bg-yellow-600 border-yellow-500';
+        return 'bg-yellow-600 dark:bg-yellow-700 border-yellow-500 dark:border-yellow-600';
       default:
-        return 'bg-gray-600 border-gray-500';
+        return 'bg-gray-600 dark:bg-gray-700 border-gray-500 dark:border-gray-600';
     }
   };
 
@@ -90,9 +90,9 @@ export function TimelineElement({ element, fps }: TimelineElementProps) {
 
   return (
     <div
-      className={`absolute top-1 bottom-1 rounded border-2 ${getElementColor()} ${
-        isSelected ? 'ring-2 ring-white' : ''
-      } cursor-move overflow-hidden`}
+      className={`absolute top-1 bottom-1 rounded-md border-2 ${getElementColor()} ${
+        isSelected ? 'ring-2 ring-primary shadow-lg' : 'shadow-md'
+      } cursor-move overflow-hidden transition-shadow hover:shadow-lg`}
       style={{
         left: `${left}px`,
         width: `${width}px`,
@@ -100,20 +100,20 @@ export function TimelineElement({ element, fps }: TimelineElementProps) {
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
     >
-      <div className="px-2 py-1 text-xs font-medium truncate text-white">
+      <div className="px-2 py-1 text-xs font-semibold truncate text-white drop-shadow-sm">
         {asset?.name || element.name}
       </div>
 
       {/* Resize handles */}
       <div
-        className="absolute left-0 top-0 bottom-0 w-1 bg-white/50 cursor-ew-resize hover:bg-white"
+        className="absolute left-0 top-0 bottom-0 w-1.5 bg-white/30 cursor-ew-resize hover:bg-white/60 transition-colors"
         onMouseDown={(e) => {
           e.stopPropagation();
           setIsResizing(true);
         }}
       />
       <div
-        className="absolute right-0 top-0 bottom-0 w-1 bg-white/50 cursor-ew-resize hover:bg-white"
+        className="absolute right-0 top-0 bottom-0 w-1.5 bg-white/30 cursor-ew-resize hover:bg-white/60 transition-colors"
         onMouseDown={(e) => {
           e.stopPropagation();
           setIsResizing(true);

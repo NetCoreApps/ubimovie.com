@@ -12,12 +12,12 @@ interface EditorLayoutProps {
 
 export function EditorLayout({ project }: EditorLayoutProps) {
   return (
-    <div className="h-screen flex flex-col bg-black text-white">
+    <div className="h-screen flex flex-col bg-background text-foreground">
       {/* Header */}
-      <div className="h-14 bg-gray-900 border-b border-gray-800 flex items-center px-4">
-        <h1 className="text-lg font-semibold">{project.name}</h1>
+      <div className="h-14 bg-slate-100 dark:bg-slate-900 border-b border-border flex items-center px-4 shadow-sm">
+        <h1 className="text-lg font-semibold text-foreground">{project.name}</h1>
         <div className="ml-auto flex items-center gap-2">
-          <span className="text-sm text-gray-400">
+          <span className="text-sm text-muted-foreground font-medium">
             {project.settings.width}x{project.settings.height} • {project.settings.fps}fps
           </span>
         </div>
@@ -26,7 +26,7 @@ export function EditorLayout({ project }: EditorLayoutProps) {
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Asset Library */}
-        <div className="w-80 bg-gray-900 border-r border-gray-800 overflow-y-auto">
+        <div className="w-80 bg-slate-50 dark:bg-slate-900 border-r border-border overflow-y-auto">
           <AssetLibrary projectId={project.id} />
         </div>
 
@@ -39,7 +39,7 @@ export function EditorLayout({ project }: EditorLayoutProps) {
           <Separator />
 
           {/* Timeline */}
-          <div className="h-80 bg-gray-950">
+          <div className="h-80 bg-slate-100 dark:bg-slate-950">
             <TimelineContainer project={project} />
           </div>
         </div>

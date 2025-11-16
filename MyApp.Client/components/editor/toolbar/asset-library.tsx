@@ -53,7 +53,7 @@ export function AssetLibrary({ projectId }: AssetLibraryProps) {
 
   return (
     <div className="p-4">
-      <h2 className="text-lg font-semibold mb-4">Assets</h2>
+      <h2 className="text-lg font-semibold mb-4 text-foreground">Assets</h2>
 
       <input
         ref={fileInputRef}
@@ -77,18 +77,18 @@ export function AssetLibrary({ projectId }: AssetLibraryProps) {
 
       <div className="space-y-2">
         {assets.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-muted-foreground">
             <Upload className="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No assets yet</p>
-            <p className="text-xs">Upload videos, images, or audio</p>
+            <p className="text-sm font-medium">No assets yet</p>
+            <p className="text-xs mt-1">Upload videos, images, or audio</p>
           </div>
         ) : (
           assets.map((asset) => (
             <div
               key={asset.id}
-              className="group relative bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors"
+              className="group relative bg-white dark:bg-slate-800 border border-border rounded-lg overflow-hidden hover:shadow-md hover:border-primary/50 transition-all"
             >
-              <div className="aspect-video bg-black flex items-center justify-center">
+              <div className="aspect-video bg-slate-100 dark:bg-slate-950 flex items-center justify-center border-b border-border">
                 {asset.metadata.thumbnail ? (
                   <img
                     src={asset.metadata.thumbnail}
@@ -96,14 +96,14 @@ export function AssetLibrary({ projectId }: AssetLibraryProps) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="text-gray-600">{getAssetIcon(asset.type)}</div>
+                  <div className="text-muted-foreground">{getAssetIcon(asset.type)}</div>
                 )}
               </div>
-              <div className="p-2">
+              <div className="p-2 bg-card">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{asset.name}</p>
-                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                    <p className="text-sm font-medium truncate text-foreground">{asset.name}</p>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
                       {getAssetIcon(asset.type)}
                       <span className="capitalize">{asset.type}</span>
                       {asset.metadata.duration && (
@@ -118,7 +118,7 @@ export function AssetLibrary({ projectId }: AssetLibraryProps) {
                     size="sm"
                     variant="ghost"
                     onClick={() => handleDeleteAsset(asset.id)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>

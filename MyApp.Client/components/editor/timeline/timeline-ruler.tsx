@@ -44,7 +44,7 @@ export function TimelineRuler({ fps, totalFrames }: TimelineRulerProps) {
 
   return (
     <div
-      className="h-8 bg-gray-900 border-b border-gray-800 relative cursor-pointer overflow-x-auto"
+      className="h-8 bg-white dark:bg-slate-900 border-b border-border relative cursor-pointer overflow-x-auto shadow-sm"
       onClick={handleClick}
       style={{ width: '100%' }}
     >
@@ -53,10 +53,10 @@ export function TimelineRuler({ fps, totalFrames }: TimelineRulerProps) {
 
         {/* Current frame cursor */}
         <div
-          className="absolute top-0 bottom-0 w-0.5 bg-blue-500 pointer-events-none z-10"
+          className="absolute top-0 bottom-0 w-0.5 bg-primary pointer-events-none z-10 shadow-md"
           style={{ left: `${cursorPosition}px` }}
         >
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-blue-500 rounded-sm" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-primary rounded-sm shadow-md" />
         </div>
       </div>
     </div>

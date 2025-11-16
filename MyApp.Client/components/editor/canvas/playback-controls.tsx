@@ -35,22 +35,23 @@ export function PlaybackControls({ project, playerRef }: PlaybackControlsProps) 
   };
 
   return (
-    <div className="h-16 bg-gray-900 border-t border-gray-800 px-4 flex items-center gap-4">
+    <div className="h-16 bg-white dark:bg-slate-900 border-t border-border px-4 flex items-center gap-4 shadow-sm">
       <div className="flex items-center gap-2">
         <Button
           size="sm"
           variant="ghost"
           onClick={() => skipBackward(30)}
           title="Go back 1 second"
+          className="h-10 w-10"
         >
-          <SkipBack className="w-4 h-4" />
+          <SkipBack className="w-5 h-5" />
         </Button>
 
         <Button
           size="sm"
           variant="default"
           onClick={togglePlay}
-          className="w-12 h-12"
+          className="w-12 h-12 rounded-full"
         >
           {isPlaying ? (
             <Pause className="w-5 h-5" />
@@ -64,19 +65,20 @@ export function PlaybackControls({ project, playerRef }: PlaybackControlsProps) 
           variant="ghost"
           onClick={() => skipForward(30)}
           title="Go forward 1 second"
+          className="h-10 w-10"
         >
-          <SkipForward className="w-4 h-4" />
+          <SkipForward className="w-5 h-5" />
         </Button>
       </div>
 
-      <div className="flex items-center gap-3 text-sm font-mono">
-        <span>{formatTime(currentFrame)}</span>
-        <span className="text-gray-600">/</span>
-        <span className="text-gray-400">{formatTime(totalFrames)}</span>
+      <div className="flex items-center gap-3 text-sm font-mono font-semibold">
+        <span className="text-foreground">{formatTime(currentFrame)}</span>
+        <span className="text-muted-foreground">/</span>
+        <span className="text-muted-foreground">{formatTime(totalFrames)}</span>
       </div>
 
-      <div className="ml-auto text-sm text-gray-400">
-        Frame: {currentFrame} / {totalFrames}
+      <div className="ml-auto text-sm text-muted-foreground font-medium">
+        Frame: <span className="text-foreground font-semibold">{currentFrame}</span> / {totalFrames}
       </div>
     </div>
   );
