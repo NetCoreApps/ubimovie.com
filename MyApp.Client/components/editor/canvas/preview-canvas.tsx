@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Player, PlayerRef } from '@remotion/player';
 import { Project } from '@/lib/types/project';
 import { useAssetStore } from '@/lib/stores/asset-store';
@@ -16,10 +16,11 @@ interface PreviewCanvasProps {
 export function PreviewCanvas({ project }: PreviewCanvasProps) {
   const playerRef = useRef<PlayerRef>(null);
   const { assets } = useAssetStore();
-  const { isPlaying, fps, pause, play } = usePlaybackStore();
+  const { isPlaying, pause } = usePlaybackStore();
   const { getTimeline, setCurrentFrame } = useTimelineStore();
   const timeline = getTimeline();
 
+  // Sync player playback state
   useEffect(() => {
     if (!playerRef.current) return;
 
@@ -30,19 +31,28 @@ export function PreviewCanvas({ project }: PreviewCanvasProps) {
     }
   }, [isPlaying]);
 
-  useEffect(() => {
-    if (playerRef.current && timeline) {
-      playerRef.current.seekTo(timeline.currentFrame);
-    }
-  }, [timeline?.currentFrame]);
+  // Handle frame updates from player
+  const handleFrameUpdate = useCallback(
+    (frame: number) => {
+      if (timeline && frame !== timeline.currentFrame) {
+        setCurrentFrame(frame);
+      }
+    },
+    [timeline, setCurrentFrame]
+  );
+
+  // Handle playback end
+  const handleEnded = useCallback(() => {
+    pause();
+  }, [pause]);
 
   if (!timeline) return null;
 
   return (
-    <div className="h-full flex flex-col bg-gray-950">
+    <div className="h-full flex flex-col bg-slate-200 dark:bg-slate-900">
       <div className="flex-1 flex items-center justify-center p-4">
         <div
-          className="relative bg-black"
+          className="relative bg-black shadow-2xl rounded-lg overflow-hidden"
           style={{
             aspectRatio: `${project.settings.width} / ${project.settings.height}`,
             maxWidth: '100%',
@@ -66,6 +76,9 @@ export function PreviewCanvas({ project }: PreviewCanvasProps) {
             compositionHeight={project.settings.height}
             style={{ width: '100%', height: '100%' }}
             controls={false}
+            clickToPlay={false}
+            doubleClickToFullscreen={false}
+            spaceKeyToPlayOrPause={false}
           />
         </div>
       </div>
